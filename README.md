@@ -2,6 +2,15 @@
 Design Project #1 for ECE-1188
 
 Code to write:
-Motor.C - Look at Lab 13 for help
-BumpInt.c - Look at Lab 14 for help
-FSM.h/c - Look at HW and FSM Labs for help
+## MOTORS
+Look at Lab 13 for help <br />
+Motor.c <br />
+PWM.C <br />
+
+## BUMP SENSORS
+Look at Lab 14 for help <br />
+BumpInt.c <br />
+
+## FSM
+Look at HW and FSM Labs for help <br />
+FSM.h/c
