@@ -1,9 +1,9 @@
 # ECE-1188-Line-Follower
 Design Project #1 for ECE-1188
 ## GROUP
-Matthew Kaiser - MPK54@pitt.edu
-Hannah Grigg - HKG9@pitt.edu
-Grant Davis - GRD23@pitt.edu
+Matthew Kaiser - MPK54@pitt.edu <br />
+Hannah Grigg - HKG9@pitt.edu <br />
+Grant Davis - GRD23@pitt.edu <br />
 
 ## MOTORS - Name
 Look at Lab 13 for help <br />
