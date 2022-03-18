@@ -46,10 +46,12 @@ policies, either expressed or implied, of the FreeBSD Project.
 // Right motor PWM connected to P2.6/TA0CCP3 (J4.39)
 // Right motor enable connected to P3.6 (J2.11)
 
+//Duty3 = right
+//Duty4 = left
 #include <stdint.h>
 #include "msp.h"
-#include "CortexM.h"
-#include "PWM.h"
+#include "../inc/CortexM.h"
+#include "../inc/PWM.h"
 
 // *******Lab 13 solution*******
 
@@ -63,7 +65,30 @@ policies, either expressed or implied, of the FreeBSD Project.
 // Input: none
 // Output: none
 void Motor_Init(void){
-  // write this as part of Lab 13
+
+    // initialize P5.4 and P5.5 and make them outputs
+    P5->SEL0 &= ~0x30;
+    P5->SEL1 &= ~0x30;    // 1) configure P2.2-P2.0 as GPIO
+    P5->DIR |= 0x30;      // 2) make P2.2-P2.0 out
+    P5->DS |= 0x30;       // 3) activate increased drive strength
+    P5->OUT &= ~0x30;     //    all off
+
+    // Initialize p2.6 and p2.7
+    P2->SEL0 &= ~0xC0;
+    P2->SEL1 &= ~0xC0;
+    P2->DIR |= 0xC0;
+    P2->DS |= 0xC0;
+    P2->OUT &= ~0xC0;
+
+    // Initialize p3.6 and p3.7
+    P3->SEL0 &= ~0xC0;
+    P3->SEL1 &= ~0xC0;
+    P3->DIR |= 0xC0;
+    P3->DS |= 0xC0;
+    P3->OUT &= ~0xC0;
+
+    PWM_Init34(15000,0,0);
+
   
 }
 
@@ -73,7 +98,11 @@ void Motor_Init(void){
 // Input: none
 // Output: none
 void Motor_Stop(void){
-  // write this as part of Lab 13
+    // Stops both motors, puts driver to sleep
+    // Returns right away
+    P1->OUT &= ~0xC0;
+    P2->OUT &= ~0xC0;   // off
+    P3->OUT &= ~0xC0;   // low current sleep mode
   
 }
 
@@ -86,7 +115,13 @@ void Motor_Stop(void){
 // Output: none
 // Assumes: Motor_Init() has been called
 void Motor_Forward(uint16_t leftDuty, uint16_t rightDuty){ 
-  // write this as part of Lab 13
+    P5->OUT &= ~0x30;
+    P2->OUT |= 0xC0;
+
+    PWM_Duty3(rightDuty);
+    PWM_Duty4(leftDuty);
+    P3->OUT |= 0xC0;
+
   
 }
 
@@ -99,7 +134,11 @@ void Motor_Forward(uint16_t leftDuty, uint16_t rightDuty){
 // Output: none
 // Assumes: Motor_Init() has been called
 void Motor_Right(uint16_t leftDuty, uint16_t rightDuty){ 
-  // write this as part of Lab 13
+    P5->OUT = 0x20;
+    P2->OUT |= 0xC0;
+    PWM_Duty3(rightDuty);
+    PWM_Duty4(leftDuty);
+    P3->OUT |= 0xC0;
 
 }
 
@@ -112,8 +151,11 @@ void Motor_Right(uint16_t leftDuty, uint16_t rightDuty){
 // Output: none
 // Assumes: Motor_Init() has been called
 void Motor_Left(uint16_t leftDuty, uint16_t rightDuty){ 
-  // write this as part of Lab 13
-
+    P5->OUT = 0x10;
+    P2->OUT |= 0xC0;
+    PWM_Duty3(rightDuty);
+    PWM_Duty4(leftDuty);
+    P3->OUT |= 0xC0;
 }
 
 // ------------Motor_Backward------------
@@ -125,6 +167,12 @@ void Motor_Left(uint16_t leftDuty, uint16_t rightDuty){
 // Output: none
 // Assumes: Motor_Init() has been called
 void Motor_Backward(uint16_t leftDuty, uint16_t rightDuty){ 
-  // write this as part of Lab 13
+    P5->OUT |= 0x30;
+    P2->OUT |= 0xC0;
+    PWM_Duty3(rightDuty);
+    PWM_Duty4(leftDuty);
+    P3->OUT |= 0xC0;
+
+
 
 }
