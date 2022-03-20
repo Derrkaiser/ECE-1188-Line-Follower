@@ -48,13 +48,30 @@ policies, either expressed or implied, of the FreeBSD Project.
 
 #include <stdint.h>
 #include "msp.h"
+
+void (*BumpTask)(void);
+
 // Initialize Bump sensors
 // Make six Port 4 pins inputs
 // Activate interface pullup
 // pins 7,6,5,3,2,0
 // Interrupt on falling edge (on touch)
-void BumpInt_Init(void(*task)(uint8_t)){
+void BumpInt_Init(void(*task)(void)){
     // write this as part of Lab 14
+    BumpTask = task;
+    P4->SEL0 &= ~0xED;
+    P4->SEL1 &= ~0xED;
+    P4->DIR &= ~0xED;
+    P4->REN = 0xED;
+    P4->OUT = 0xED;                         // pull up resistors on all of them
+
+    P4->IES |= 0xED;            // edge interrupts
+
+    P4->IFG &= ~0xED;                  // clear flag4 and flag1 (reduce possibility of extra interrupt)
+    P4->IE |= 0xED;                    // arm interrupt on P1.4 and P1.1
+
+    NVIC->IP[8] = (NVIC->IP[8]&0x00FFFFFF)|0x40000000; // priority 2
+    NVIC->ISER[1] = 0x00000008;        // enable interrupt 35 in NVIC
 
 }
 // Read current state of 6 switches
@@ -68,11 +85,32 @@ void BumpInt_Init(void(*task)(uint8_t)){
 uint8_t Bump_Read(void){
     // write this as part of Lab 14
 
-    return 0; // replace this line
+    // reads in the result and shifts the bits to make a 6 bit number with no holes
+    uint8_t orig = (P4->IN);
+    uint8_t result = ((orig&0x80)>>2)|((orig&0x40)>>2)|((orig&0x20)>>2)|((orig&0x08)>>1)|((orig&0x04)>>1)|(orig&0x01);
+    return result;
 }
 // we do not care about critical section/race conditions
 // triggered on touch, falling edge
 void PORT4_IRQHandler(void){
     // write this as part of Lab 14
+
+    uint8_t farL, centerL, centerR, farR, left, right;
+    uint8_t bumpResult = Bump_Read();
+    farL = bumpResult & (1 << (7));
+    left = bumpResult & (1 << (6));
+    centerL = bumpResult & (1 << (5));
+    centerR = bumpResult & (1 << (3));
+    right = bumpResult & (1 << (2));
+    farR = bumpResult & 1;
+
+    if ((farL == 0)|(left == 0)|(centerL == 0)) {
+        Motor_Stop();
+    }
+    if ((farR == 0)|(right == 0)|(centerR == 0)) {
+        Motor_Stop();
+    }
+
+
 }
 
