@@ -82,7 +82,7 @@ void BumpInt_Init(void(*task)(void)){
 // bit 2 Bump2
 // bit 1 Bump1
 // bit 0 Bump0
-uint8_t Bump_Read(void){
+uint8_t BumpInt_Read(void){
     // write this as part of Lab 14
 
     // reads in the result and shifts the bits to make a 6 bit number with no holes
@@ -94,22 +94,7 @@ uint8_t Bump_Read(void){
 // triggered on touch, falling edge
 void PORT4_IRQHandler(void){
     // write this as part of Lab 14
-
-    uint8_t farL, centerL, centerR, farR, left, right;
-    uint8_t bumpResult = Bump_Read();
-    farL = bumpResult & (1 << (7));
-    left = bumpResult & (1 << (6));
-    centerL = bumpResult & (1 << (5));
-    centerR = bumpResult & (1 << (3));
-    right = bumpResult & (1 << (2));
-    farR = bumpResult & 1;
-
-    if ((farL == 0)|(left == 0)|(centerL == 0)) {
-        Motor_Stop();
-    }
-    if ((farR == 0)|(right == 0)|(centerR == 0)) {
-        Motor_Stop();
-    }
+    (*BumpTask)();
 
 
 }

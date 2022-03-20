@@ -59,9 +59,7 @@ void motorOut(uint8_t dir,uint16_t dutyR,uint16_t dutyL){
   else if(dir == 3){
     Motor_Left(dutyL, dutyR);
   }
-  else{
-    printf("Fatal Error: Direction not valid!\n");
-  }
+
 }
 
 void advanceState(uint8_t Input){

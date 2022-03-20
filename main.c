@@ -15,18 +15,16 @@
 #include "SysTickInts.h"
 #include "TimerA1.h"
 
-uint8_t CollisionFlag;  // mailbox
 void HandleCollision(){
 
-    uint8_t bumpResult = Bump_Read();
+    uint8_t bumpResult = BumpInt_Read();
 
-    if ((bumpResult & (1 << 7))|(bumpResult & (1 << 6))|(bumpResult & (1 << 5))) {
+    if (!(bumpResult & (1 << 5))|!(bumpResult & (1 << 4))|!(bumpResult & (1 << 3))) {
        Motor_Stop();
     }
-    if ((bumpResult & (1 << 3))|(bumpResult & (1 << 2))|(bumpResult & (1 << 0))) {
+    if (!(bumpResult & (1 << 2))|!(bumpResult & (1 << 1))|!(bumpResult & (1 << 0))) {
         Motor_Stop();
     }
-   CollisionFlag = 1;
 }
 
 void TimedPause(uint32_t time){

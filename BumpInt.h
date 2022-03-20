@@ -72,7 +72,7 @@ policies, either expressed or implied, of the FreeBSD Project.
  * @return none
  * @brief  Initialize Bump sensors
  */
-void BumpInt_Init(void(*task)(uint8_t));
+void BumpInt_Init(void(*task)(void));
 
 /**
  * Read current state of 6 switches<br>
