@@ -15,41 +15,18 @@
 #include "SysTickInts.h"
 #include "TimerA1.h"
 
-#include "Bump.h" // Just used to show that motors work before BumpInt is completed. Once BumpInt is completed. Right click BumpInt.c in project explorer to the left and uncheck "Exclude from build". Then delete
-                 // Bump.c and Bump.h
+uint8_t CollisionFlag;  // mailbox
+void HandleCollision(){
 
+    uint8_t bumpResult = Bump_Read();
 
-void checkBump()
-{
-    uint8_t bump_read = 0;
-
-    bump_read = Bump_Read();
-    /* Map LED's from Bump Sensor */
-
-   if(!(bump_read & (1 << (7))))
-   {
+    if ((bumpResult & (1 << 7))|(bumpResult & (1 << 6))|(bumpResult & (1 << 5))) {
        Motor_Stop();
-   }
-   else if(!(bump_read & (1 << (6))))
-   {
-       Motor_Stop();
-   }
-   else if(!(bump_read & (1 << (5))))
-   {
-       Motor_Stop();
-   }
-   else if(!(bump_read & (1 << (3))))
-   {
-       Motor_Stop();
-   }
-   else if(!(bump_read & (1 << (2))))
-   {
-       Motor_Stop();
-   }
-   else if(!(bump_read & (1 << (0))))
-   {
-       Motor_Stop();
-   }
+    }
+    if ((bumpResult & (1 << 3))|(bumpResult & (1 << 2))|(bumpResult & (1 << 0))) {
+        Motor_Stop();
+    }
+   CollisionFlag = 1;
 }
 
 void TimedPause(uint32_t time){
@@ -63,9 +40,9 @@ void main(void)
 {
     Clock_Init48MHz();
     LaunchPad_Init(); // built-in switches and LEDs
-    Bump_Init();      // bump switches
+    BumpInt_Init(&HandleCollision);      // bump switches
     Motor_Init();     // your function
-    TimerA1_Init(&checkBump,50000);  // 1000 Hz
+    TimerA1_Init(&HandleCollision,50000);  // 1000 Hz
     EnableInterrupts();
 
     while(1){
