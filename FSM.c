@@ -64,12 +64,7 @@ void motorOut(uint8_t dir,uint16_t dutyR,uint16_t dutyL){
   }
 }
 
-void advanceState(void){
-  
-  uint8_t Input;
-  Input = Port1_Input();      // get new input from buttons
+void advanceState(uint8_t Input){
   Pt = Pt->Next[Input];      // transition to next state
   motorOut(Pt->dir, Pt->DutyL, Pt->DutyR);   //move motor
-
 }
-
