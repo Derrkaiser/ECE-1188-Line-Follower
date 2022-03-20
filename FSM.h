@@ -18,6 +18,6 @@ void motorOut(uint8_t dir,uint16_t dutyR,uint16_t dutyL);
 Output the current state and advance to the next one
 based on provided input
 */
-void advanceState(void);
+void advanceState(uint8_t Input);
 
 #endif /* FSM_H_ */
