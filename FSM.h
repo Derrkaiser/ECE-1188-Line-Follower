@@ -20,4 +20,8 @@ based on provided input
 */
 void advanceState(uint8_t Input);
 
+void stopMotor();
+
+void turn90();
+
 #endif /* FSM_H_ */

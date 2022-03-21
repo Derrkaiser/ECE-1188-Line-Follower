@@ -2,3 +2,4 @@ Debug/*
 .xdchelp
 config/*
 .launches/*
+/Debug/

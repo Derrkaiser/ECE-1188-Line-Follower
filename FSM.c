@@ -23,7 +23,9 @@
 struct State {
   uint16_t DutyR;             
   uint16_t DutyL; 
-  uint8_t dir;         
+  uint8_t dir;
+  uint16_t time;
+  uint8_t inc;
   const struct State *Next[4];};// depends on 2-bit input
 typedef const struct State State_t;
 #define center    &FSM[0]
@@ -33,19 +35,29 @@ typedef const struct State State_t;
 #define right2    &FSM[4]
 #define lostLeft  &FSM[5]
 #define lostRight &FSM[6]
-#define lostMove  &FSM[7]
-#define stop      &FSM[8]
+#define lostMove1  &FSM[7]
+#define lostMove2 &FSM[8]
+#define recoveryTurnRight &FSM[9]
+#define recoveryTurnLeft &FSM[10]
+#define stop      &FSM[11]
 
-State_t FSM[9]={
- {7500,7500,1,{right1,left1,right1,center}},
- {2500,7500,2,{lostLeft,left2,right1,center}},
- {7500,7500,1,{lostLeft,left1,right1,center}},
- {7500,2500,3,{lostRight,left1,right2,center}},
- {7500, 7500,1,{lostRight,left1,right1,center}},
- {0, 7500,2,{lostMove,lostMove,lostMove,lostMove}},
- {7500, 0,3,{lostMove,lostMove,lostMove,lostMove}},
- {7500, 7500,1,{stop,left1,right1,center}},
- {0, 0,1,{stop,stop,stop,stop}}};
+uint16_t count = 0;
+State_t FSM[12]={
+    {3000,3000,1,15,0,{right1,left1,right1,center}},
+    {4500,6500,2,50,0,{lostLeft,left2,right1,center}},
+    {1500,1500,1,10,0,{lostLeft,left1,right1,center}},
+    {6500,4500,3,50,0,{lostRight,left1,right2,center}},
+    {1500, 1500,1,10,0,{lostRight,left1,right1,center}},
+    {3000, 6500,2,50,0,{lostMove1,lostMove1,lostMove1,lostMove1}},
+    {6500, 3000,3,50,0,{lostMove2,lostMove2,lostMove2,lostMove2}},
+
+    {3500, 2000,1,10,0,{recoveryTurnRight,left1,right1,center}},
+    {2000, 3500,1,10,0,{recoveryTurnRight,left1,right1,center}},
+
+    {0,2000,1,5,1,{recoveryTurnRight,left1,right1,center}},
+     {2000,0,1,5,1,{recoveryTurnLeft,left1,right1,center}},
+
+ {0, 0,1,100,0,{stop,stop,stop,stop}}};
 
 State_t *Pt = center;  // state pointer
 
@@ -64,5 +76,46 @@ void motorOut(uint8_t dir,uint16_t dutyR,uint16_t dutyL){
 
 void advanceState(uint8_t Input){
   Pt = Pt->Next[Input];      // transition to next state
-  motorOut(Pt->dir, Pt->DutyL, Pt->DutyR);   //move motor
+  motorOut(Pt->dir, Pt->DutyR, Pt->DutyL);   //move motor
+  Clock_Delay1ms(Pt->time);
+
+  if(Pt->inc == 0)
+  { count = 0; }
+  count += Pt->inc;
+
+  if(count == 300 && Pt == recoveryTurnRight)
+  {
+      count = 0;
+      Pt = recoveryTurnLeft;
+  }
+  else if(count == 600 && Pt == recoveryTurnLeft)
+  {
+      count = 0;
+      Pt = stop;
+  }
+
+}
+
+void stopMotor()
+{
+    Pt = stop;
+}
+
+void turn90()
+{
+    Motor_Stop();
+    Pt = stop;
+    Motor_Right(3000,3000);
+    Clock_Delay1ms(650);          // run for a while and stop
+
+    Motor_Stop();
+    Clock_Delay1ms(2000);
+//    Motor_Forward(1000,1000);
+//    Clock_Delay1ms(250);
+//    Clock_Delay1ms(4000);
+
+    Pt = center;
+   Clock_Delay1ms(4000);
+
+
 }

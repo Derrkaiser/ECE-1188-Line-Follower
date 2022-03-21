@@ -134,7 +134,7 @@ void Motor_Forward(uint16_t leftDuty, uint16_t rightDuty){
 // Output: none
 // Assumes: Motor_Init() has been called
 void Motor_Right(uint16_t leftDuty, uint16_t rightDuty){ 
-    P5->OUT = 0x20;
+    P5->OUT |= 0x20;
     P2->OUT |= 0xC0;
     PWM_Duty3(rightDuty);
     PWM_Duty4(leftDuty);
@@ -151,7 +151,7 @@ void Motor_Right(uint16_t leftDuty, uint16_t rightDuty){
 // Output: none
 // Assumes: Motor_Init() has been called
 void Motor_Left(uint16_t leftDuty, uint16_t rightDuty){ 
-    P5->OUT = 0x10;
+    P5->OUT |= 0x10;
     P2->OUT |= 0xC0;
     PWM_Duty3(rightDuty);
     PWM_Duty4(leftDuty);
