@@ -39,25 +39,32 @@ typedef const struct State State_t;
 #define lostMove2 &FSM[8]
 #define recoveryTurnRight &FSM[9]
 #define recoveryTurnLeft &FSM[10]
-#define stop      &FSM[11]
+#define turn90 &FSM[11]
+//#define turn90Boost &FSM[12]
+#define stopShort &FSM[12]
+#define stop      &FSM[13]
 
 uint16_t count = 0;
-State_t FSM[12]={
+State_t FSM[14]={
     {3000,3000,1,15,0,{right1,left1,right1,center}},
-    {4500,6500,2,50,0,{lostLeft,left2,right1,center}},
+    {4750,6750,2,50,0,{lostLeft,left2,right1,center}},
     {1500,1500,1,10,0,{lostLeft,left1,right1,center}},
-    {6500,4500,3,50,0,{lostRight,left1,right2,center}},
+    {4750,6750,3,50,0,{lostRight,left1,right2,center}},
     {1500, 1500,1,10,0,{lostRight,left1,right1,center}},
-    {3000, 6500,2,50,0,{lostMove1,lostMove1,lostMove1,lostMove1}},
-    {6500, 3000,3,50,0,{lostMove2,lostMove2,lostMove2,lostMove2}},
+    {5000, 7500,2,10,0,{lostMove1,lostMove1,lostMove1,lostMove1}},
+    {7500, 5000,3,10,0,{lostMove2,lostMove2,lostMove2,lostMove2}},
 
     {3500, 2000,1,10,0,{recoveryTurnRight,left1,right1,center}},
     {2000, 3500,1,10,0,{recoveryTurnRight,left1,right1,center}},
 
     {0,2000,1,5,1,{recoveryTurnRight,left1,right1,center}},
-     {2000,0,1,5,1,{recoveryTurnLeft,left1,right1,center}},
+    {2000,0,1,5,1,{recoveryTurnLeft,left1,right1,center}},
 
- {0, 0,1,100,0,{stop,stop,stop,stop}}};
+    {3000,3000,2,650,0,{center,center,center,center}},
+    //{2000,0,1,5,0,{recoveryTurnLeft,left1,right1,center}},
+    {0,0,1,10,0,{turn90,turn90,turn90,turn90}},
+
+    {0, 0,1,100,0,{stop,stop,stop,stop}}};
 
 State_t *Pt = center;  // state pointer
 
@@ -83,12 +90,12 @@ void advanceState(uint8_t Input){
   { count = 0; }
   count += Pt->inc;
 
-  if(count == 300 && Pt == recoveryTurnRight)
+  if(count == 600 && Pt == recoveryTurnRight)
   {
       count = 0;
       Pt = recoveryTurnLeft;
   }
-  else if(count == 600 && Pt == recoveryTurnLeft)
+  else if(count == 900 && Pt == recoveryTurnLeft)
   {
       count = 0;
       Pt = stop;
@@ -101,7 +108,11 @@ void stopMotor()
     Pt = stop;
 }
 
-void turn90()
+void startTurn(){
+  Pt = stopShort;
+}
+
+/*void turn90()
 {
     Motor_Stop();
     Pt = stop;
@@ -118,4 +129,4 @@ void turn90()
    Clock_Delay1ms(4000);
 
 
-}
+}*/

@@ -22,6 +22,6 @@ void advanceState(uint8_t Input);
 
 void stopMotor();
 
-void turn90();
+void startTurn();
 
 #endif /* FSM_H_ */

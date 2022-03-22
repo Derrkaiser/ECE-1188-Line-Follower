@@ -52,9 +52,9 @@ void main(void)
     while(1){
       uint8_t data = Reflectance_Read(1000);
 
-      if(data & 0b00001111 == 0b00001111)
+      if(data & 0b00111111 == 0b00111111)
       {
-          turn90();
+          startTurn();
           continue;
       }
       uint8_t center_data = data & 0b00011000;
